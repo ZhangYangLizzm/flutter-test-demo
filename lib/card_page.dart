@@ -43,18 +43,40 @@ class _BigCardState extends State<BigCard> {
 
   @override
   Widget build(BuildContext context) {
-    // var appState = context.watch<AppState>();
-
     return Consumer<AppState>(builder: (context, item, child) {
-      List<CardItem> cardItemList = [];
+      List<Widget> cardItemList = [];
+      List<Widget> temp = [];
       for (int i = 1; i <= item.cardItemList.length; i++) {
         DataModel current = item.cardItemList[i - 1];
-
-        cardItemList.add(CardItem(
-          title: current.name,
-          imageSrc: current.url,
-          descriptionDirection: 'vertical',
-          price: current.price,
+        if (i % 3 != 0) {
+          temp.add(Expanded(
+              flex: 1,
+              child: CardItem(
+                  title: current.name,
+                  imageSrc: current.url,
+                  descriptionDirection: 'horizontal',
+                  price: current.price,
+                  mealType: current.mealType,
+                  cardId: current.id,
+                  isCollect: current.isCollect)));
+        } else {
+          cardItemList.add(Row(
+            children: temp,
+          ));
+          temp = [];
+          cardItemList.add(CardItem(
+              cardId: current.id,
+              title: current.name,
+              imageSrc: current.url,
+              descriptionDirection: 'vertical',
+              price: current.price,
+              mealType: current.mealType,
+              isCollect: current.isCollect));
+        }
+      }
+      if (temp.isNotEmpty) {
+        cardItemList.add(Row(
+          children: temp,
         ));
       }
       return ListView(
@@ -71,14 +93,19 @@ class CardItem extends StatelessWidget {
   final String title;
   final String imageSrc;
   final double price;
-  final int id = 1;
+  final int cardId;
   final String descriptionDirection;
+  final String mealType;
+  final bool isCollect;
   const CardItem(
       {super.key,
       required this.title,
       required this.imageSrc,
       required this.descriptionDirection,
-      required this.price});
+      required this.price,
+      required this.mealType,
+      required this.cardId,
+      required this.isCollect});
 
   @override
   Widget build(BuildContext context) {
@@ -86,26 +113,33 @@ class CardItem extends StatelessWidget {
     if (descriptionDirection == 'horizontal') {
       item = Column(children: [
         SizedBox(
-          width: 195,
-          height: 100,
-          child: Image.network(
-            imageSrc,
-            fit: BoxFit.cover,
-          ),
-        ),
-        CardDescription(title: title, price: price)
-      ]);
-    } else {
-      item = Row(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(
-          width: 223,
           height: 100,
           child: Image.network(
             imageSrc,
             fit: BoxFit.fitWidth,
           ),
         ),
-        CardDescription(title: title, price: price)
+        CardDescription(
+            title: title,
+            price: price,
+            mealType: mealType,
+            isCollect: isCollect)
+      ]);
+    } else {
+      item = Row(children: [
+        SizedBox(
+          width: 215,
+          height: 100,
+          child: Image.network(
+            imageSrc,
+            fit: BoxFit.cover,
+          ),
+        ),
+        CardDescription(
+            title: title,
+            price: price,
+            mealType: mealType,
+            isCollect: isCollect)
       ]);
     }
     return InkWell(
@@ -114,7 +148,11 @@ class CardItem extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => Detail(
-                cardId: id, imageSrc: imageSrc, price: price, name: title),
+              cardId: cardId,
+              imageSrc: imageSrc,
+              price: price,
+              name: title,
+            ),
           ),
         )
       },
@@ -125,9 +163,21 @@ class CardItem extends StatelessWidget {
 class CardDescription extends StatelessWidget {
   final String title;
   final double price;
-  const CardDescription({super.key, required this.title, required this.price});
+  final String mealType;
+  final bool isCollect;
+  const CardDescription({
+    super.key,
+    required this.title,
+    required this.price,
+    required this.mealType,
+    required this.isCollect,
+  });
   @override
   Widget build(BuildContext context) {
+    String collectText = '收藏至礼品库';
+    if (isCollect) {
+      collectText = '已收藏';
+    }
     return Column(
       children: [
         Row(
@@ -140,14 +190,41 @@ class CardDescription extends StatelessWidget {
           ],
         ),
         Row(
-          children: const [
-            Text('当日午餐'),
-            Text('次日午餐'),
-            Text('次日晚餐'),
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(128, 158, 158, 158)),
+              child: Text(
+                '当日午餐',
+                style: TextStyle(
+                    color: mealType == '当日午餐' ? Colors.pink : Colors.white),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(128, 158, 158, 158)),
+              child: Text(
+                '次日午餐',
+                style: TextStyle(
+                    color: mealType == '次日午餐' ? Colors.pink : Colors.white),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(128, 158, 158, 158)),
+              child: Text(
+                '次日晚餐',
+                style: TextStyle(
+                    color: mealType == '次日晚餐' ? Colors.pink : Colors.white),
+              ),
+            ),
           ],
         ),
-        const Text('收藏至礼品库'),
+        Text(collectText),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(onPressed: () {}, child: const Text('用礼金兑换')),
             ElevatedButton(onPressed: () {}, child: const Text('送给TA')),
@@ -157,20 +234,3 @@ class CardDescription extends StatelessWidget {
     );
   }
 }
-
-
-
-// Consumer<AppState>(builder: (context, item, child) {
-//           List<CardItem> cardItemList = [];
-//           for (int i = 1; i <= item.cardItemList.length; i++) {
-//             DataModel current = item.cardItemList[i - 1];
-
-//             cardItemList.add(CardItem(
-//               title: current.name,
-//               imageSrc: current.url,
-//               descriptionDirection: 'vertical',
-//               price: current.price,
-//             ));
-//           }
-//           return cardItemList;
-//         })

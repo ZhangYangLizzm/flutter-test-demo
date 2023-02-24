@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_test_demo/main.dart';
 
 class Detail extends StatelessWidget {
   final String name;
   final String imageSrc;
   final double price;
   final int cardId;
+
   const Detail({
     super.key,
     required this.cardId,
@@ -24,11 +27,15 @@ class Detail extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const Text('当日午餐'),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.favorite_border),
-                    label: const Text('收藏'),
-                    onPressed: () {},
-                  )
+                  Consumer<AppState>(builder: (context, item, child) {
+                    return ElevatedButton.icon(
+                      icon: Icon(item.getIcon(cardId)),
+                      label: const Text('收藏'),
+                      onPressed: () {
+                        item.toggleFavorite(cardId);
+                      },
+                    );
+                  })
                 ],
               ),
               Row(

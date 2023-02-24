@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_demo/card_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test_demo/top.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'data/data.dart';
 
 void main() {
@@ -31,14 +31,23 @@ class App extends StatelessWidget {
 class AppState extends ChangeNotifier {
   List<DataModel> cardItemList = CardItemList().getCardItemList();
 
-  List<DataModel> favorites = [];
-  void toggleFavorite(DataModel item) {
-    if (favorites.contains(item)) {
-      favorites.remove(item);
-    } else {
-      favorites.add(item);
-    }
+  void toggleFavorite(int cardId) {
+    var index = cardItemList.indexWhere((element) => element.id == cardId);
+    var item = cardItemList[index];
+    item.setIsCollect(!item.isCollect);
     notifyListeners();
+  }
+
+  IconData getIcon(int cardId) {
+    var index = cardItemList.indexWhere((element) => element.id == cardId);
+    var item = cardItemList[index];
+    IconData icon;
+    if (item.isCollect) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+    return icon;
   }
 
   UnmodifiableListView<DataModel> get itemlist =>
@@ -54,11 +63,13 @@ class HomePage extends StatelessWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            SizedBox(
+            SafeArea(
+                child: SizedBox(
               height: 50,
               child: TopMenu(),
-            ),
-            RefreshListView(),
+            )),
+            // RefreshListView(),
+            Expanded(child: RefreshListView())
           ],
         ));
   }
