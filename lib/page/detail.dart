@@ -58,8 +58,13 @@ class Detail extends StatelessWidget {
                       const SizedBox(
                         height: 10,
                       ),
-                      const Text('当日午餐'),
-                      const Text('次日午餐'),
+                      Row(
+                        children: const [
+                          Text('当日午餐'),
+                          SizedBox(width: 10),
+                          Text('次日午餐'),
+                        ],
+                      ),
                       const Text('次日晚餐')
                     ],
                   ),

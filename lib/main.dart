@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_demo/card_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test_demo/top.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'cache.dart';
 import 'data/data.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppCache.init();
   runApp(const App());
 }
 
@@ -52,6 +54,11 @@ class AppState extends ChangeNotifier {
 
   UnmodifiableListView<DataModel> get itemlist =>
       UnmodifiableListView(cardItemList);
+
+  loadMore() {
+    cardItemList = [...cardItemList, ...cardItemList];
+    notifyListeners();
+  }
 }
 
 class HomePage extends StatelessWidget {
@@ -68,7 +75,6 @@ class HomePage extends StatelessWidget {
               height: 50,
               child: TopMenu(),
             )),
-            // RefreshListView(),
             Expanded(child: RefreshListView())
           ],
         ));

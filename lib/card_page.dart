@@ -4,6 +4,8 @@ import 'package:flutter_test_demo/main.dart';
 import 'package:flutter_test_demo/page/detail.dart';
 import 'package:provider/provider.dart';
 
+import 'cache.dart';
+
 class RefreshListView extends StatelessWidget {
   const RefreshListView({super.key});
 
@@ -28,7 +30,7 @@ class BigCard extends StatefulWidget {
 }
 
 class _BigCardState extends State<BigCard> {
-  num itemCount = 10;
+  num itemCount = 20;
   final ScrollController _controller = ScrollController();
   @override
   // 初始化State
@@ -36,7 +38,7 @@ class _BigCardState extends State<BigCard> {
     super.initState();
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        // _loadMoreData();
+        _loadMoreData();
       }
     });
   }
@@ -80,16 +82,23 @@ class _BigCardState extends State<BigCard> {
         ));
       }
       return ListView(
-        controller: ScrollController(),
-        shrinkWrap: true, // 该属性表示是否根据子组件的总长度来设置ListView的长度，默认值为false
+        controller: _controller,
+        // shrinkWrap: true, // 该属性表示是否根据子组件的总长度来设置ListView的长度，默认值为false
         scrollDirection: Axis.vertical,
         children: cardItemList,
       );
     });
   }
+
+  void _loadMoreData() {
+    setState(() {
+      var appState = Provider.of<AppState>(context, listen: false);
+      appState.loadMore();
+    });
+  }
 }
 
-class CardItem extends StatelessWidget {
+class CardItem extends StatefulWidget {
   final String title;
   final String imageSrc;
   final double price;
@@ -106,24 +115,48 @@ class CardItem extends StatelessWidget {
       required this.mealType,
       required this.cardId,
       required this.isCollect});
+  @override
+  State<CardItem> createState() => _CardItemState();
+}
+
+class _CardItemState extends State<CardItem> {
+  bool? localCollectState;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getCollectState();
+  }
+
+  void getCollectState() {
+    setState(() {
+      localCollectState = AppCache.getCollectState(widget.cardId);
+      print(widget.cardId);
+      print(localCollectState);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     Flex item;
-    if (descriptionDirection == 'horizontal') {
+    if (widget.descriptionDirection == 'horizontal') {
       item = Column(children: [
         SizedBox(
           height: 100,
           child: Image.network(
-            imageSrc,
+            widget.imageSrc,
             fit: BoxFit.fitWidth,
           ),
         ),
         CardDescription(
-            title: title,
-            price: price,
-            mealType: mealType,
-            isCollect: isCollect)
+            title: widget.title,
+            price: widget.price,
+            mealType: widget.mealType,
+            isCollect: localCollectState ?? widget.isCollect)
       ]);
     } else {
       item = Row(children: [
@@ -131,15 +164,15 @@ class CardItem extends StatelessWidget {
           width: 215,
           height: 100,
           child: Image.network(
-            imageSrc,
+            widget.imageSrc,
             fit: BoxFit.cover,
           ),
         ),
         CardDescription(
-            title: title,
-            price: price,
-            mealType: mealType,
-            isCollect: isCollect)
+            title: widget.title,
+            price: widget.price,
+            mealType: widget.mealType,
+            isCollect: localCollectState ?? widget.isCollect)
       ]);
     }
     return InkWell(
@@ -148,10 +181,10 @@ class CardItem extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => Detail(
-              cardId: cardId,
-              imageSrc: imageSrc,
-              price: price,
-              name: title,
+              cardId: widget.cardId,
+              imageSrc: widget.imageSrc,
+              price: widget.price,
+              name: widget.title,
             ),
           ),
         )

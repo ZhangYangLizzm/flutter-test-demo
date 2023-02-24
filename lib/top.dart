@@ -17,6 +17,8 @@ class ListViewItem extends StatelessWidget {
   }
 }
 
+const menuList = ['美食', '食品', '日用', '花植', '保健', '美食', '食品'];
+
 class TopMenu extends StatelessWidget {
   const TopMenu({super.key});
 
@@ -24,15 +26,7 @@ class TopMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       scrollDirection: Axis.horizontal,
-      children: const <Widget>[
-        ListViewItem(title: '美食'),
-        ListViewItem(title: '食品'),
-        ListViewItem(title: '日用'),
-        ListViewItem(title: '花植'),
-        ListViewItem(title: '保健'),
-        ListViewItem(title: '美食'),
-        ListViewItem(title: '食品'),
-      ],
+      children: menuList.map((title) => ListViewItem(title: title)).toList(),
     );
   }
 }
