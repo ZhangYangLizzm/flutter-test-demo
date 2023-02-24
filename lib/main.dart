@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test_demo/card_page.dart';
 import 'package:provider/provider.dart';
@@ -14,29 +16,33 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => AppState(),
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const HomePage(),
+        ));
   }
 }
 
 class AppState extends ChangeNotifier {
-  // WordPair current = WordPair.random();
+  List<DataModel> cardItemList = CardItemList().getCardItemList();
 
-  // List<WordPair> favorites = <WordPair>[];
+  List<DataModel> favorites = [];
+  void toggleFavorite(DataModel item) {
+    if (favorites.contains(item)) {
+      favorites.remove(item);
+    } else {
+      favorites.add(item);
+    }
+    notifyListeners();
+  }
 
-  // void toggleFavorite() {
-  //   if (favorites.contains(current)) {
-  //     favorites.remove(current);
-  //   } else {
-  //     favorites.add(current);
-  //   }
-  //   notifyListeners();
-  // }
+  UnmodifiableListView<DataModel> get itemlist =>
+      UnmodifiableListView(cardItemList);
 }
 
 class HomePage extends StatelessWidget {
@@ -52,7 +58,6 @@ class HomePage extends StatelessWidget {
               height: 50,
               child: TopMenu(),
             ),
-            // BigCard(),
             RefreshListView(),
           ],
         ));

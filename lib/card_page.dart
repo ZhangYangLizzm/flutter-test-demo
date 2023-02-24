@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_demo/data/data.dart';
+import 'package:flutter_test_demo/main.dart';
 import 'package:flutter_test_demo/page/detail.dart';
+import 'package:provider/provider.dart';
 
 class RefreshListView extends StatelessWidget {
   const RefreshListView({super.key});
@@ -40,46 +43,35 @@ class _BigCardState extends State<BigCard> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      controller: ScrollController(),
-      shrinkWrap: true, // 该属性表示是否根据子组件的总长度来设置ListView的长度，默认值为false
-      scrollDirection: Axis.vertical,
-      children: <Widget>[
-        Row(
-          children: const [
-            CardItem(
-              price: 45,
-              title: '牛油果鲜虾沙拉',
-              imageSrc:
-                  'https://bing.com/th?id=AMMS_059deac34eff2a4a54364819f2906c76',
-              descriptionDirection: 'horizontal',
-            ),
-            CardItem(
-              title: '日本和牛牛排套餐',
-              imageSrc:
-                  'https://th.bing.com/th/id/R.6638265c4d7687749632bbe2dd4c6824?rik=Lw7%2bcHrWnUZkEg&riu=http%3a%2f%2fimg13.360buyimg.com%2fn12%2fjfs%2ft1%2f27289%2f30%2f11938%2f355820%2f5c933588Ef00e0eaf%2f77f9c8539ab40c2a.jpg&ehk=3gvR3Fss0VCIZ048AbE5DIiQzU0tsK99nMvMABA54pM%3d&risl=&pid=ImgRaw&r=0',
-              descriptionDirection: 'horizontal',
-              price: 235,
-            )
-          ],
-        ),
-        const CardItem(
-          title: '水蜜桃甜品',
-          imageSrc:
-              'https://th.bing.com/th/id/R.9717261124030c07b0e2925f62f72647?rik=Xe3LVIQpvtvt7A&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190522%2fed431cc9fd3341f9b04b95287ef2b7c1.jpeg&ehk=k1rKEiSau1jDG9GuivBilvjMKzhK03zU%2fOaLbwNznD0%3d&risl=&pid=ImgRaw&r=0',
+    // var appState = context.watch<AppState>();
+
+    return Consumer<AppState>(builder: (context, item, child) {
+      List<CardItem> cardItemList = [];
+      for (int i = 1; i <= item.cardItemList.length; i++) {
+        DataModel current = item.cardItemList[i - 1];
+
+        cardItemList.add(CardItem(
+          title: current.name,
+          imageSrc: current.url,
           descriptionDirection: 'vertical',
-          price: 235,
-        )
-      ],
-    );
+          price: current.price,
+        ));
+      }
+      return ListView(
+        controller: ScrollController(),
+        shrinkWrap: true, // 该属性表示是否根据子组件的总长度来设置ListView的长度，默认值为false
+        scrollDirection: Axis.vertical,
+        children: cardItemList,
+      );
+    });
   }
 }
 
 class CardItem extends StatelessWidget {
   final String title;
   final String imageSrc;
-  final int price;
-  final String id = '1';
+  final double price;
+  final int id = 1;
   final String descriptionDirection;
   const CardItem(
       {super.key,
@@ -132,7 +124,7 @@ class CardItem extends StatelessWidget {
 
 class CardDescription extends StatelessWidget {
   final String title;
-  final int price;
+  final double price;
   const CardDescription({super.key, required this.title, required this.price});
   @override
   Widget build(BuildContext context) {
@@ -165,3 +157,20 @@ class CardDescription extends StatelessWidget {
     );
   }
 }
+
+
+
+// Consumer<AppState>(builder: (context, item, child) {
+//           List<CardItem> cardItemList = [];
+//           for (int i = 1; i <= item.cardItemList.length; i++) {
+//             DataModel current = item.cardItemList[i - 1];
+
+//             cardItemList.add(CardItem(
+//               title: current.name,
+//               imageSrc: current.url,
+//               descriptionDirection: 'vertical',
+//               price: current.price,
+//             ));
+//           }
+//           return cardItemList;
+//         })

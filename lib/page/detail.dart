@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class Detail extends StatelessWidget {
   final String name;
   final String imageSrc;
-  final int price;
-  final String cardId;
+  final double price;
+  final int cardId;
   const Detail({
     super.key,
     required this.cardId,

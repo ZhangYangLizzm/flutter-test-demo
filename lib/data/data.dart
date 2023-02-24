@@ -4,27 +4,34 @@ const cardItemData = [
   {
     'id': 1,
     'name': '牛油鲜果沙拉',
-    'pirce': 45.0,
-    'url':
-        'https://lmdevpub.oss.wiqun.com/tester/148/mindstreettester/wiqun/3.food/273doujiao2.jpg',
+    'price': 45.0,
+    'url': 'https://bing.com/th?id=AMMS_059deac34eff2a4a54364819f2906c76',
     'mealType': '当日午餐',
     'isCollect': false,
   },
   {
     'id': 2,
     'name': '日本和牛牛排',
-    'pirce': 235.0,
+    'price': 235.0,
     'url':
-        'https://lmdevpub.oss.wiqun.com/tester/148/mindstreettester/wiqun/3.food/274yangzhouchaofan1.jpg',
+        'https://th.bing.com/th/id/R.6638265c4d7687749632bbe2dd4c6824?rik=Lw7%2bcHrWnUZkEg&riu=http%3a%2f%2fimg13.360buyimg.com%2fn12%2fjfs%2ft1%2f27289%2f30%2f11938%2f355820%2f5c933588Ef00e0eaf%2f77f9c8539ab40c2a.jpg&ehk=3gvR3Fss0VCIZ048AbE5DIiQzU0tsK99nMvMABA54pM%3d&risl=&pid=ImgRaw&r=0',
     'mealType': '次日午餐',
     'isCollect': false,
   },
   {
     'id': 3,
     'name': '水蜜桃甜品',
-    'pirce': 60.0,
+    'price': 60.0,
     'url':
-        'https://lmdevpub.oss.wiqun.com/tester/148/mindstreettester/wiqun/2.fruit/202pinguo3.jpg',
+        'https://th.bing.com/th/id/R.9717261124030c07b0e2925f62f72647?rik=Xe3LVIQpvtvt7A&riu=http%3a%2f%2f5b0988e595225.cdn.sohucs.com%2fimages%2f20190522%2fed431cc9fd3341f9b04b95287ef2b7c1.jpeg&ehk=k1rKEiSau1jDG9GuivBilvjMKzhK03zU%2fOaLbwNznD0%3d&risl=&pid=ImgRaw&r=0',
+    'mealType': '当日午餐',
+    'isCollect': true,
+  },
+  {
+    'id': 4,
+    'name': '水蜜桃甜品',
+    'price': 60.0,
+    'url': 'https://bing.com/th?id=AMMS_059deac34eff2a4a54364819f2906c76',
     'mealType': '当日午餐',
     'isCollect': true,
   }
@@ -33,25 +40,37 @@ const cardItemData = [
 class DataModel {
   late int id = -1;
   late String name = "";
-  late int price = 9999;
+  late double price = 9999;
   late String url = "";
   late String mealType = "";
   late bool isCollect = false;
-  DataModel(item) {
-    id = item.id;
-    name = item.name;
-    price = item.price;
-    url = item.url;
-    mealType = item.mealType;
-    isCollect = item.isCollect;
+  DataModel(Map<String, Object> item) {
+    id = item["id"] as int;
+    name = item["name"] as String;
+    price = item["price"] as double;
+    url = item["url"] as String;
+    mealType = item["mealType"] as String;
+    isCollect = item["isCollect"] as bool;
+  }
+
+  setMealType(value) {
+    mealType = value;
+  }
+
+  setIsCollect(value) {
+    isCollect = !isCollect;
   }
 }
 
 class CardItemList {
-  late List<DataModel> cardItemList;
+  List<DataModel> cardItemList = [];
   CardItemList() {
     for (int i = 0; i < cardItemData.length; i++) {
       cardItemList.add(DataModel(cardItemData[i]));
     }
+  }
+
+  getCardItemList() {
+    return cardItemList;
   }
 }
