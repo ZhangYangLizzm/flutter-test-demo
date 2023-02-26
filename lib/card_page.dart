@@ -135,8 +135,6 @@ class _CardItemState extends State<CardItem> {
   void getCollectState() {
     setState(() {
       localCollectState = AppCache.getCollectState(widget.cardId);
-      print(widget.cardId);
-      print(localCollectState);
     });
   }
 

@@ -180,12 +180,6 @@ const cardItemData = [
   },
 ];
 
-Future<bool?> getCollect(int id) async {
-  final prefs = await SharedPreferences.getInstance();
-  var flag = prefs.getBool("isCollect_$id");
-  return flag;
-}
-
 class DataModel {
   late int id = -1;
   late String name = "";
@@ -201,7 +195,7 @@ class DataModel {
     mealType = item["mealType"] as String;
     isCollect = item["isCollect"] as bool;
   }
-  setIsCollect(value) async {
+  setIsCollect(bool value) async {
     isCollect = value;
     AppCache.setCollectState(id, value);
   }
