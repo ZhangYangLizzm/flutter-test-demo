@@ -209,7 +209,13 @@ class CardItemList {
     }
   }
 
-  getCardItemList() {
+  List<DataModel> getCardItemList() {
     return cardItemList;
+  }
+
+  DataModel getCardItemFromCardId(int id) {
+    final index = cardItemList.indexWhere((element) => element.id == id);
+    final cardItem = cardItemList[index];
+    return cardItem;
   }
 }

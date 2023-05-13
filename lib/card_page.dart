@@ -30,33 +30,52 @@ class BigCard extends StatefulWidget {
 }
 
 class _BigCardState extends State<BigCard> {
-  num itemCount = 20;
   final ScrollController _controller = ScrollController();
-  @override
+
   // 初始化State
+  @override
   void initState() {
     super.initState();
-    _controller.addListener(() {
-      if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        _loadMoreData();
-      }
-    });
+    _controller.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+      _loadMoreData();
+    }
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _loadMoreData() {
+    final appState = context.read<AppState>();
+    appState.loadMore();
+  }
+  // void _loadMoreData() {
+  //   setState(() {
+  //     var appState = Provider.of<AppState>(context, listen: false);
+  //     appState.loadMore();
+  //   });
+  // }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(builder: (context, item, child) {
+    return Consumer<AppState>(builder: (context, appState, child) {
       List<Widget> cardItemList = [];
       List<Widget> temp = [];
-      for (int i = 1; i <= item.cardItemList.length; i++) {
-        DataModel current = item.cardItemList[i - 1];
-        if (i % 3 != 0) {
+      for (int index = 1; index <= appState.cardItemList.length; index++) {
+        DataModel current = appState.cardItemList[index - 1];
+        if (index % 3 != 0) {
           temp.add(Expanded(
               flex: 1,
               child: CardItem(
+                  descriptionDirection: 'horizontal',
                   title: current.name,
                   imageSrc: current.url,
-                  descriptionDirection: 'horizontal',
                   price: current.price,
                   mealType: current.mealType,
                   cardId: current.id,
@@ -87,13 +106,6 @@ class _BigCardState extends State<BigCard> {
         scrollDirection: Axis.vertical,
         children: cardItemList,
       );
-    });
-  }
-
-  void _loadMoreData() {
-    setState(() {
-      var appState = Provider.of<AppState>(context, listen: false);
-      appState.loadMore();
     });
   }
 }
@@ -140,9 +152,9 @@ class _CardItemState extends State<CardItem> {
 
   @override
   Widget build(BuildContext context) {
-    Flex item;
+    Flex appState;
     if (widget.descriptionDirection == 'horizontal') {
-      item = Column(children: [
+      appState = Column(children: [
         SizedBox(
           height: 100,
           child: Image.network(
@@ -157,7 +169,7 @@ class _CardItemState extends State<CardItem> {
             isCollect: localCollectState ?? widget.isCollect)
       ]);
     } else {
-      item = Row(children: [
+      appState = Row(children: [
         SizedBox(
           width: 215,
           height: 100,
@@ -174,7 +186,7 @@ class _CardItemState extends State<CardItem> {
       ]);
     }
     return InkWell(
-      child: Card(child: item),
+      child: Card(child: appState),
       onTap: () => {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -222,35 +234,11 @@ class CardDescription extends StatelessWidget {
         ),
         Row(
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                  color: Color.fromARGB(128, 158, 158, 158)),
-              child: Text(
-                '当日午餐',
-                style: TextStyle(
-                    color: mealType == '当日午餐' ? Colors.pink : Colors.white),
-              ),
-            ),
+            MealTypeButton(title: '当日午餐', isSelected: mealType == '当日午餐'),
             const SizedBox(width: 10),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Color.fromARGB(128, 158, 158, 158)),
-              child: Text(
-                '次日午餐',
-                style: TextStyle(
-                    color: mealType == '次日午餐' ? Colors.pink : Colors.white),
-              ),
-            ),
+            MealTypeButton(title: '次日午餐', isSelected: mealType == '次日午餐'),
             const SizedBox(width: 10),
-            Container(
-              decoration: const BoxDecoration(
-                  color: Color.fromARGB(128, 158, 158, 158)),
-              child: Text(
-                '次日晚餐',
-                style: TextStyle(
-                    color: mealType == '次日晚餐' ? Colors.pink : Colors.white),
-              ),
-            ),
+            MealTypeButton(title: '次日晚餐', isSelected: mealType == '次日晚餐'),
           ],
         ),
         Text(collectText),
@@ -262,6 +250,33 @@ class CardDescription extends StatelessWidget {
           ],
         )
       ],
+    );
+  }
+}
+
+class MealTypeButton extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+
+  const MealTypeButton({
+    Key? key,
+    required this.title,
+    required this.isSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(128, 158, 158, 158),
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? Colors.pink : Colors.white,
+        ),
+      ),
     );
   }
 }

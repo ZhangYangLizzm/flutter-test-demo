@@ -34,49 +34,69 @@ class AppState extends ChangeNotifier {
   List<DataModel> cardItemList = CardItemList().getCardItemList();
 
   void toggleFavorite(int cardId) {
-    var index = cardItemList.indexWhere((element) => element.id == cardId);
-    var item = cardItemList[index];
-    item.setIsCollect(!item.isCollect);
-    notifyListeners();
+    final index = cardItemList.indexWhere((element) => element.id == cardId);
+    if (index != -1) {
+      final item = cardItemList[index];
+      item.setIsCollect(!item.isCollect);
+      notifyListeners();
+    }
   }
 
   IconData getIcon(int cardId) {
-    var index = cardItemList.indexWhere((element) => element.id == cardId);
-    var item = cardItemList[index];
-    IconData icon;
-    if (item.isCollect) {
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
+    final index = cardItemList.indexWhere((element) => element.id == cardId);
+    if (index != -1) {
+      final item = cardItemList[index];
+      if (item.isCollect) {
+        return Icons.favorite;
+      } else {
+        return Icons.favorite_border;
+      }
     }
-    return icon;
+    return Icons.favorite_border;
   }
 
-  UnmodifiableListView<DataModel> get itemlist =>
-      UnmodifiableListView(cardItemList);
-
   loadMore() {
-    cardItemList = [...cardItemList, ...cardItemList];
+    final newList = List<DataModel>.from(cardItemList);
+    newList.addAll(cardItemList);
+    cardItemList = newList;
     notifyListeners();
   }
 }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Test Demo')),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            SafeArea(
-                child: SizedBox(
-              height: 50,
-              child: TopMenu(),
-            )),
-            Expanded(child: RefreshListView())
+      appBar: AppBar(
+        title: const Text('Test Demo'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            // TODO: 添加菜单点击事件
+          },
+        ),
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: Column(
+          children: [
+            Flexible(
+              flex: 1,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 50,
+                child: const TopMenu(),
+              ),
+            ),
+            const Flexible(
+              flex: 9,
+              child: RefreshListView(),
+            ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
