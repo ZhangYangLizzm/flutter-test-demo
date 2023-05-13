@@ -73,26 +73,18 @@ class _BigCardState extends State<BigCard> {
           temp.add(Expanded(
               flex: 1,
               child: CardItem(
-                  descriptionDirection: 'horizontal',
-                  title: current.name,
-                  imageSrc: current.url,
-                  price: current.price,
-                  mealType: current.mealType,
-                  cardId: current.id,
-                  isCollect: current.isCollect)));
+                descriptionDirection: 'horizontal',
+                cardItemData: current,
+              )));
         } else {
           cardItemList.add(Row(
             children: temp,
           ));
           temp = [];
           cardItemList.add(CardItem(
-              cardId: current.id,
-              title: current.name,
-              imageSrc: current.url,
-              descriptionDirection: 'vertical',
-              price: current.price,
-              mealType: current.mealType,
-              isCollect: current.isCollect));
+            cardItemData: current,
+            descriptionDirection: 'vertical',
+          ));
         }
       }
       if (temp.isNotEmpty) {
@@ -111,43 +103,41 @@ class _BigCardState extends State<BigCard> {
 }
 
 class CardItem extends StatefulWidget {
-  final String title;
-  final String imageSrc;
-  final double price;
-  final int cardId;
   final String descriptionDirection;
-  final String mealType;
-  final bool isCollect;
+  final DataModel cardItemData;
   const CardItem(
       {super.key,
-      required this.title,
-      required this.imageSrc,
-      required this.descriptionDirection,
-      required this.price,
-      required this.mealType,
-      required this.cardId,
-      required this.isCollect});
+      required this.cardItemData,
+      required this.descriptionDirection});
   @override
   State<CardItem> createState() => _CardItemState();
 }
 
 class _CardItemState extends State<CardItem> {
-  bool? localCollectState;
+  late bool localCollectState;
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    localCollectState = widget.cardItemData.isCollect;
     getCollectState();
   }
 
-  void getCollectState() {
-    setState(() {
-      localCollectState = AppCache.getCollectState(widget.cardId);
-    });
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   getCollectState();
+  // }
+
+  void getCollectState() async {
+    final value = await AppCache.getCollectState(widget.cardItemData.id);
+    if (value != null) {
+      setState(() {
+        localCollectState = value;
+      });
+    }
+    // setState(() {
+    //   localCollectState = AppCache.getCollectState(widget.cardItemData.id);
+    // });
   }
 
   @override
@@ -158,15 +148,15 @@ class _CardItemState extends State<CardItem> {
         SizedBox(
           height: 100,
           child: Image.network(
-            widget.imageSrc,
+            widget.cardItemData.url,
             fit: BoxFit.fitWidth,
           ),
         ),
         CardDescription(
-            title: widget.title,
-            price: widget.price,
-            mealType: widget.mealType,
-            isCollect: localCollectState ?? widget.isCollect)
+            title: widget.cardItemData.name,
+            price: widget.cardItemData.price,
+            mealType: widget.cardItemData.mealType,
+            isCollect: localCollectState ?? widget.cardItemData.isCollect)
       ]);
     } else {
       appState = Row(children: [
@@ -174,15 +164,15 @@ class _CardItemState extends State<CardItem> {
           width: 215,
           height: 100,
           child: Image.network(
-            widget.imageSrc,
+            widget.cardItemData.url,
             fit: BoxFit.cover,
           ),
         ),
         CardDescription(
-            title: widget.title,
-            price: widget.price,
-            mealType: widget.mealType,
-            isCollect: localCollectState ?? widget.isCollect)
+            title: widget.cardItemData.name,
+            price: widget.cardItemData.price,
+            mealType: widget.cardItemData.mealType,
+            isCollect: localCollectState ?? widget.cardItemData.isCollect)
       ]);
     }
     return InkWell(
@@ -191,10 +181,10 @@ class _CardItemState extends State<CardItem> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => Detail(
-              cardId: widget.cardId,
-              imageSrc: widget.imageSrc,
-              price: widget.price,
-              name: widget.title,
+              cardId: widget.cardItemData.id,
+              imageSrc: widget.cardItemData.url,
+              price: widget.cardItemData.price,
+              name: widget.cardItemData.name,
             ),
           ),
         )

@@ -180,42 +180,83 @@ const cardItemData = [
   },
 ];
 
+// class DataModel {
+//   late int id = -1;
+//   late String name = "";
+//   late double price = 9999;
+//   late String url = "";
+//   late String mealType = "";
+//   late bool isCollect = false;
+//   DataModel(Map<String, Object> item) {
+//     id = item["id"] as int;
+//     name = item["name"] as String;
+//     price = item["price"] as double;
+//     url = item["url"] as String;
+//     mealType = item["mealType"] as String;
+//     isCollect = item["isCollect"] as bool;
+//   }
+//   setIsCollect(bool value) async {
+//     isCollect = value;
+//     AppCache.setCollectState(id, value);
+//   }
+// }
+
+// class CardItemList {
+//   List<DataModel> cardItemList = [];
+//   CardItemList() {
+//     for (int i = 0; i < cardItemData.length; i++) {
+//       cardItemList.add(DataModel(cardItemData[i]));
+//     }
+//   }
+
+//   List<DataModel> getCardItemList() {
+//     return cardItemList;
+//   }
+
+//   DataModel getCardItemFromCardId(int id) {
+//     final index = cardItemList.indexWhere((element) => element.id == id);
+//     final cardItem = cardItemList[index];
+//     return cardItem;
+//   }
+// }
+
 class DataModel {
-  late int id = -1;
-  late String name = "";
-  late double price = 9999;
-  late String url = "";
-  late String mealType = "";
-  late bool isCollect = false;
-  DataModel(Map<String, Object> item) {
-    id = item["id"] as int;
-    name = item["name"] as String;
-    price = item["price"] as double;
-    url = item["url"] as String;
-    mealType = item["mealType"] as String;
-    isCollect = item["isCollect"] as bool;
-  }
-  setIsCollect(bool value) async {
+  int id;
+  String name;
+  double price;
+  String url;
+  String mealType;
+  bool isCollect;
+
+  DataModel({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.url,
+    required this.mealType,
+    required this.isCollect,
+  });
+
+  Future<void> setIsCollect(bool value) async {
     isCollect = value;
     AppCache.setCollectState(id, value);
   }
 }
 
 class CardItemList {
-  List<DataModel> cardItemList = [];
-  CardItemList() {
-    for (int i = 0; i < cardItemData.length; i++) {
-      cardItemList.add(DataModel(cardItemData[i]));
-    }
-  }
-
-  List<DataModel> getCardItemList() {
-    return cardItemList;
-  }
+  List<DataModel> cardItemList = cardItemData
+      .map((item) => DataModel(
+            id: item["id"] as int,
+            name: item["name"] as String,
+            price: item["price"] as double,
+            url: item["url"] as String,
+            mealType: item["mealType"] as String,
+            isCollect: item["isCollect"] as bool,
+          ))
+      .toList();
 
   DataModel getCardItemFromCardId(int id) {
     final index = cardItemList.indexWhere((element) => element.id == id);
-    final cardItem = cardItemList[index];
-    return cardItem;
+    return cardItemList[index];
   }
 }

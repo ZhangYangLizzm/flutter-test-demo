@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_demo/card_page.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_test_demo/top.dart';
+import 'package:flutter_test_demo/topmenu.dart';
 import 'cache.dart';
 import 'data/data.dart';
 
@@ -31,7 +31,7 @@ class App extends StatelessWidget {
 }
 
 class AppState extends ChangeNotifier {
-  List<DataModel> cardItemList = CardItemList().getCardItemList();
+  List<DataModel> cardItemList = CardItemList().cardItemList;
 
   void toggleFavorite(int cardId) {
     final index = cardItemList.indexWhere((element) => element.id == cardId);

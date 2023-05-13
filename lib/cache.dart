@@ -17,7 +17,8 @@ class AppCache {
   // 简化获取工具类的缓存实例，以便在下方封装一些方法
   static SharedPreferences get _pre => _instance!.sharedPreferences;
 
-  static bool? getCollectState(int id) => _pre.getBool("isCollect_$id");
+  static Future<bool?> getCollectState(int id) async =>
+      _pre.getBool("isCollect_$id");
 
   static void setCollectState(int id, bool value) =>
       _pre.setBool("isCollect_$id", value);
