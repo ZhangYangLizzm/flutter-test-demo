@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test_demo/card_page.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +21,12 @@ class App extends StatelessWidget {
         child: MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primaryColor: Colors.blue,
+            textTheme: const TextTheme(
+              labelLarge: TextStyle(color: Colors.white),
+            ),
+            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+                .copyWith(secondary: Colors.blueAccent),
           ),
           home: const HomePage(),
         ));

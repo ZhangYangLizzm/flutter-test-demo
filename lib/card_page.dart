@@ -81,9 +81,12 @@ class _BigCardState extends State<BigCard> {
             children: temp,
           ));
           temp = [];
-          cardItemList.add(CardItem(
-            cardItemData: current,
-            descriptionDirection: 'vertical',
+          cardItemList.add(Expanded(
+            flex: 1,
+            child: CardItem(
+              cardItemData: current,
+              descriptionDirection: 'vertical',
+            ),
           ));
         }
       }
@@ -135,16 +138,13 @@ class _CardItemState extends State<CardItem> {
         localCollectState = value;
       });
     }
-    // setState(() {
-    //   localCollectState = AppCache.getCollectState(widget.cardItemData.id);
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    Flex appState;
+    Flex newWidet;
     if (widget.descriptionDirection == 'horizontal') {
-      appState = Column(children: [
+      newWidet = Column(children: [
         SizedBox(
           height: 100,
           child: Image.network(
@@ -153,30 +153,34 @@ class _CardItemState extends State<CardItem> {
           ),
         ),
         CardDescription(
-            title: widget.cardItemData.name,
-            price: widget.cardItemData.price,
-            mealType: widget.cardItemData.mealType,
-            isCollect: localCollectState ?? widget.cardItemData.isCollect)
+            cardItemData: widget.cardItemData, isCollect: localCollectState)
       ]);
     } else {
-      appState = Row(children: [
-        SizedBox(
-          width: 215,
-          height: 100,
-          child: Image.network(
-            widget.cardItemData.url,
-            fit: BoxFit.cover,
+      newWidet = Row(children: [
+        Expanded(
+          flex: 1,
+          child: SizedBox(
+            height: 100,
+            child: Image.network(
+              widget.cardItemData.url,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
+        const SizedBox(
+          width: 16,
+        ),
         CardDescription(
-            title: widget.cardItemData.name,
-            price: widget.cardItemData.price,
-            mealType: widget.cardItemData.mealType,
-            isCollect: localCollectState ?? widget.cardItemData.isCollect)
+            cardItemData: widget.cardItemData, isCollect: localCollectState)
       ]);
     }
     return InkWell(
-      child: Card(child: appState),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: newWidet,
+        ),
+      ),
       onTap: () => {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -194,48 +198,51 @@ class _CardItemState extends State<CardItem> {
 }
 
 class CardDescription extends StatelessWidget {
-  final String title;
-  final double price;
-  final String mealType;
+  final DataModel cardItemData;
   final bool isCollect;
   const CardDescription({
     super.key,
-    required this.title,
-    required this.price,
-    required this.mealType,
+    required this.cardItemData,
     required this.isCollect,
   });
+
   @override
   Widget build(BuildContext context) {
+    final title = cardItemData.name;
+    final price = cardItemData.price;
+    final mealType = cardItemData.mealType;
     String collectText = '收藏至礼品库';
     if (isCollect) {
       collectText = '已收藏';
     }
+
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(title),
+            const SizedBox(width: 8),
             Text(
-              '  ￥$price',
+              '￥$price',
               style: const TextStyle(color: Colors.red),
             ),
           ],
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             MealTypeButton(title: '当日午餐', isSelected: mealType == '当日午餐'),
-            const SizedBox(width: 10),
             MealTypeButton(title: '次日午餐', isSelected: mealType == '次日午餐'),
-            const SizedBox(width: 10),
             MealTypeButton(title: '次日晚餐', isSelected: mealType == '次日晚餐'),
           ],
         ),
         Text(collectText),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(onPressed: () {}, child: const Text('用礼金兑换')),
+            const SizedBox(width: 8),
             ElevatedButton(onPressed: () {}, child: const Text('送给TA')),
           ],
         )
@@ -257,15 +264,15 @@ class MealTypeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(128, 158, 158, 158),
-        borderRadius: BorderRadius.all(Radius.circular(8)),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? Theme.of(context).colorScheme.secondary
+            : Theme.of(context).primaryColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         title,
-        style: TextStyle(
-          color: isSelected ? Colors.pink : Colors.white,
-        ),
+        style: Theme.of(context).textTheme.labelLarge,
       ),
     );
   }

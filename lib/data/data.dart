@@ -1,6 +1,5 @@
 ///测试demo数据,图片失效可自行替换,数据量可自行增加,结构不可更改
 import 'package:flutter_test_demo/cache.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const cardItemData = [
   {
@@ -179,46 +178,6 @@ const cardItemData = [
     'isCollect': false,
   },
 ];
-
-// class DataModel {
-//   late int id = -1;
-//   late String name = "";
-//   late double price = 9999;
-//   late String url = "";
-//   late String mealType = "";
-//   late bool isCollect = false;
-//   DataModel(Map<String, Object> item) {
-//     id = item["id"] as int;
-//     name = item["name"] as String;
-//     price = item["price"] as double;
-//     url = item["url"] as String;
-//     mealType = item["mealType"] as String;
-//     isCollect = item["isCollect"] as bool;
-//   }
-//   setIsCollect(bool value) async {
-//     isCollect = value;
-//     AppCache.setCollectState(id, value);
-//   }
-// }
-
-// class CardItemList {
-//   List<DataModel> cardItemList = [];
-//   CardItemList() {
-//     for (int i = 0; i < cardItemData.length; i++) {
-//       cardItemList.add(DataModel(cardItemData[i]));
-//     }
-//   }
-
-//   List<DataModel> getCardItemList() {
-//     return cardItemList;
-//   }
-
-//   DataModel getCardItemFromCardId(int id) {
-//     final index = cardItemList.indexWhere((element) => element.id == id);
-//     final cardItem = cardItemList[index];
-//     return cardItem;
-//   }
-// }
 
 class DataModel {
   int id;
